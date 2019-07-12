@@ -1,0 +1,3 @@
+qlalr --no-debug --no-lines plover.g
+qmake
+make
