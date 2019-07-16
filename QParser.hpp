@@ -93,9 +93,10 @@ bool QParser<_Parser, _Table, _Value>::parse()
 
 		act = _Table::t_action(act, token);
 
+		// end of rule
 		if (_stack[_tos].state == _Table::ACCEPT_STATE)
 			return true;
-
+		// need next token
 		else if (act > 0)
 		{
 			if (++_tos == _stack.size())
@@ -104,7 +105,7 @@ bool QParser<_Parser, _Table, _Value>::parse()
 			_stack[_tos].state = act;
 			token = -1;
 		}
-
+		// production complete, need to parse
 		else if (act < 0)
 		{
 			int r = -act - 1;
@@ -113,45 +114,31 @@ bool QParser<_Parser, _Table, _Value>::parse()
 			consumeRule(r);
 			act = _stack[_tos].state = _Table::nt_action(act, _Table::lhs[r] - _Table::TERMINAL_COUNT);
 		}
-
+		// error handling
 		else
 		{
 			if (token == _Table::EOF_SYMBOL)
 				_error = "Unexpected end of document.";
 			else
 			{
-				std::array<int, 16> expected;
-				int ers = _stack[_tos].state;
-				int nexpected = 0;
+				QStringList expected;
+				const int ers = _stack[_tos].state;
 
 				for (int tk = 0; tk < _Table::TERMINAL_COUNT; tk++)
 				{
-					if (_Table::t_action(ers, tk) <= 0)
-						continue;
-					if (_Table::spell[tk])
-					{
-						if (nexpected < expected.size())
-							expected[nexpected++] = tk;
-					}
+					if ((_Table::t_action(ers, tk) > 0) && _Table::spell[tk])
+						expected.push_back(_Table::spell[tk]);
 				}
 
 				// if possible, we list all the expected symbols instead of the found one
-				if (nexpected && nexpected < expected.size())
+				if (!expected.isEmpty())
 				{
-					// first expected symbols
-					QString exp_str = QString("'%1'").arg(_Table::spell[expected[0]]);
-					// if exactly 2 symbols possible, we put "$1 or $2"
-					if (nexpected == 2)
-						exp_str += QString(" or '%1'").arg(_Table::spell[expected[1]]);
-					// if more, we put "$1, $2, $3... or $n"
-					else if (nexpected > 2)
-					{
-						int s = 1;
-						for (; s < nexpected - 1; ++s)
-							exp_str += QString(", '%1'").arg(_Table::spell[expected[s]]);
-						exp_str += QString(", or '%1'").arg(_Table::spell[expected[s]]);
-					}
-					_error = QString("Expected %1, but got '%2'.").arg(exp_str, _Table::spell[token]);
+					// last expected symbols
+					QString exp_str = expected.takeLast();
+					// if more than 1 symbol
+					if (!expected.isEmpty())
+						exp_str = expected.join("', '") + "', or '" + exp_str;
+					_error = QString("Expected '%1', but got '%2'.").arg(exp_str, _Table::spell[token]);
 				}
 				// otherwise, we just put the unexpected symbol
 				else

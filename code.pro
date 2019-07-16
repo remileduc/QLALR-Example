@@ -2,7 +2,8 @@
 HEADERS += \
 	parser_p.h \ # generated with qlalr
 	Command.hpp \
-	CommandParser.hpp # generated with qlalr
+	CommandParser.hpp  \ # generated with qlalr
+	QParser.hpp
 
 SOURCES += \
 	main.cpp \
