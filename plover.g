@@ -74,7 +74,7 @@
 #include "QParser.hpp"
 #include "$header"
 
-class CommandParser : public QParser<CommandParser, $table, QString>
+class CommandParser : public QParser<CommandParser, $table, QStringRef>
 {
 public:
 	virtual ~CommandParser() override = default;
@@ -128,13 +128,13 @@ Noun: THE ObjectList
 ObjectList: ObjectList ObjectName;
 /.
 	case $rule_number:
-		command.nounNames.append(sym(2));
+		command.nounNames.append(sym(2).toString());
 		break;
 ./
 ObjectList: ObjectName;
 /.
 	case $rule_number:
-		command.nounNames.append(sym(1));
+		command.nounNames.append(sym(1).toString());
 		break;
 ./
 
@@ -144,13 +144,13 @@ Second: THE SecondList
 SecondList: ObjectName;
 /.
 	case $rule_number:
-		command.secondNames.append(sym(1));
+		command.secondNames.append(sym(1).toString());
 		break;
 ./
 SecondList: SecondList ObjectName;
 /.
 	case $rule_number:
-		command.secondNames.append(sym(2));
+		command.secondNames.append(sym(2).toString());
 		break;
 ./
 
@@ -212,7 +212,7 @@ int CommandParser::nextToken()
 		return EOF_SYMBOL;
 
 	auto nextToken = tokens.takeFirst();
-	sym(1) = nextToken.toString();
+	sym(1) = nextToken;
 
 	if (nextToken == "eat")
 		return CommandParser::EAT;

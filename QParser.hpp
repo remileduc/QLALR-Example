@@ -30,8 +30,9 @@
 #ifndef QPARSER_HPP
 #define QPARSER_HPP
 
-#include <array>
 #include <vector>
+
+#include <QStringList>
 
 template<class _Parser, class _Table, class _Value = int>
 class QParser : protected _Table

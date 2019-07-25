@@ -9,7 +9,7 @@
 #include "QParser.hpp"
 #include "parser_p.h"
 
-class CommandParser : public QParser<CommandParser, Parser, QString>
+class CommandParser : public QParser<CommandParser, Parser, QStringRef>
 {
 public:
 	virtual ~CommandParser() override = default;

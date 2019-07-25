@@ -15,19 +15,19 @@ void CommandParser::consumeRule(int rule)
 	{
 
 	case 8:
-		command.nounNames.append(sym(2));
+		command.nounNames.append(sym(2).toString());
 		break;
 
 	case 9:
-		command.nounNames.append(sym(1));
+		command.nounNames.append(sym(1).toString());
 		break;
 
 	case 12:
-		command.secondNames.append(sym(1));
+		command.secondNames.append(sym(1).toString());
 		break;
 
 	case 13:
-		command.secondNames.append(sym(2));
+		command.secondNames.append(sym(2).toString());
 		break;
 
 	case 14:
@@ -68,7 +68,7 @@ int CommandParser::nextToken()
 		return EOF_SYMBOL;
 
 	auto nextToken = tokens.takeFirst();
-	sym(1) = nextToken.toString();
+	sym(1) = nextToken;
 
 	if (nextToken == "eat")
 		return CommandParser::EAT;
